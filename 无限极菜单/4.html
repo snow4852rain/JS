@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<style>
+			body,
+			html,
+			ul,
+			li,
+			h2 {
+				margin: 0;
+				padding: 0;
+			}
+			
+			li {
+				list-style: none;
+			}
+			
+			#menuList {
+				position: absolute;
+				left: 100px;
+				top: 40px;
+				border: 1px solid #000;
+				padding: 0 4px;
+			}
+			
+			#menuList ul ul {
+				padding-left: 30px;
+				display: none;
+			}
+			
+			#menuList ul ul.active {
+				display: block;
+			}
+		</style>
+	</head>
+
+	<body>
+		<div id="menuList">
+
+		</div>
+		<script src="createHTML.js"></script>
+		<script>
+			//声明一个变量等于获取js的数据
+			var data = menuDate;
+			//获取最外层的元素
+			var menuList = document.getElementById('menuList');
+			//调用函数    并把参数传给函数
+			menuList.innerHTML = createMenuList(data);
+
+			//封装一个函数来创建页面结构
+			//根据数据创造结构
+			function createMenuList(data) {
+
+				var str = '<ul>';
+				var len =data.length;
+				for(var i =0 ; i<len ; i++ ){
+					
+					str += '<li><h2><span>+</span>' + data[i].name + '</h2>';
+
+					if(data[i].children && data[i].children.length) {
+						//创建子菜单的结构
+						str += createMenuList(data[i].children);
+
+					}
+
+					str += '</li>';
+				}
+
+				str += '</ul>';
+				return str;
+
+			}
+			
+			//-----------------开始操作点击的事件-------------------------
+			//利用节点
+			var firstMenuList = menuList.firstElementChild;
+			//调用函数，并且传入第一个ul，初始化
+			tabMenuList(firstMenuList);
+			//封装一个函数
+			function tabMenuList(list){
+				//获取list下的所有子元素的节点
+				var childrenMenu = list.children;
+				var len = childrenMenu.length;
+				
+				for(var i =0;i<len;i++){
+				//获取子元素的h2标签	
+					var caption = childrenMenu[i].children[0];
+					//给h2绑定事件
+					caption.onclick = function(){
+						//获取点击的h2的下一个兄弟元素
+						var sibling = this.nextElementSibling;
+						//判断下一个兄弟元素是不是存在
+						//如果不存在，就跳出函数
+						if(!sibling) return;
+						//获取标题的span
+						var menuStatus = this.firstElementChild;
+						//获取点击的h2的父级的父级的下的所有ul
+						var otherList = this.parentNode.parentNode.querySelectorAll('ul');
+						//判断点击的兄弟元素的状态
+						if(sibling.className==='active'){
+							//清空点击的元素的状态    恢复原来的状态
+							sibling.className = '';
+							//span的替换
+							menuStatus.innerHTML = '+';
+						}else{
+							var len = otherList.length;
+							for(var i =0; i<len ; i++){
+								otherList[i].className ='';
+								otherList[i].previousElementSibling.firstElementChild.innerHTML = '+';
+								
+							}
+							
+							sibling.className ='active';
+							menuStatus.innerHTML ='-';
+							
+							
+							//要给当前的子菜单添加点击事件
+							tabMenuList(sibling);
+							
+							
+						}
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+						
+					}
+				}
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+			}
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+		</script>
+	</body>
+
+</html>

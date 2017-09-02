@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<style type="text/css">
+			body,
+			html,
+			ul,
+			li,
+			h2 {
+				margin: 0;
+				padding: 0;
+			}
+			
+			li {
+				list-style: none;
+			}
+			
+			#menuList {
+				position: absolute;
+				left: 100px;
+				top: 40px;
+				border: 1px solid #000;
+				padding: 0 4px;
+			}
+			
+			#menuList ul ul {
+				padding-left: 30px;
+				display: none;
+			}
+			
+			#menuList ul ul.active {
+				display: block;
+			}
+		</style>
+	</head>
+
+	<body>
+		<!--先实现最初始的布局-->
+		<div id="menuList">
+
+		</div>
+		<script src="createHTML.js"></script>
+		<script type="text/javascript">
+			var data = menuDate;
+			var menuList = document.getElementById('menuList');
+			//把参数传进生成页面结构的函数中
+			menuList.innerHTML = createMenuList(data);
+			//利用数据生成所有的页面结构
+			function createMenuList(data) {
+				//声明一个变量存储结构
+				var str = '<ul>';
+				//先不管二级菜单的里面的结构
+				for(var i = 0, len = data.length; i < len; i++) {
+					str += '<li><h2><span>+</span>' + data[i].name + '</h2>';
+
+					// 如果说这级菜单有子菜单，那么意味着当前data[i]的数据中有children并且这个children.length不是0
+					if(data[i].children && data[i].children.length) {
+						str += createMenuList(data[i].children);
+					}
+
+					str += '</li>';
+				}
+
+				str += '</ul>';
+				return str;
+
+			}
+
+			//------------开始添加点击动作事件
+
+			//先获取所有的标题
+			var captions = document.querySelectorAll('#menuList h2');
+
+    		for(var i=0, len=captions.length; i<len; i++){
+			
+				captions[i].onclick = function() {
+					// 获取到当前点击的这个标题的下一个列表
+					var nextSibling = this.nextElementSibling;
+					//因为这个子菜单有可能不存在，如果不存在就终止代码继续执行代码
+					if(!nextSibling) return;
+					//获取h2下的span
+					var menuStatus = this.firstElementChild;
+					//找到同级别的所有的子菜单
+					var otherList = this.parentNode.parentNode.querySelectorAll('ul');
+
+					if(nextSibling.className === 'active') {
+						nextSibling.className = '';
+						menuStatus.innerHTML = '+';
+					} else { // 先关闭所有，当当前的展开
+						for(var i = 0, len = otherList.length; i < len; i++) {
+							otherList[i].className = '';
+							otherList[i].previousElementSibling.firstElementChild.innerHTML = '+';
+						}
+						nextSibling.className = 'active';
+						menuStatus.innerHTML = '-';
+
+					}
+				}
+			}
+		</script>
+	</body>
+
+</html>
